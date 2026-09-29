@@ -71,21 +71,68 @@ string display(Stack& s) {
 
 // SOAL 1
 bool push(Stack& s, int nilai) {
-    return false;
+    Node *newNode = new Node;
+    newNode->data = nilai;
+    newNode->next = s.top;
+    s.top = newNode;
+    return true;
 }
 
 // SOAL 2
 bool pop(Stack& s, int& nilai) {
-    return false;
+    if(s.top == nullptr){
+        return false;
+    }
+
+    Node *nodeTeratas = s.top;
+    nilai = nodeTeratas->data;
+    s.top = nodeTeratas->next;
+    delete nodeTeratas;
+    return true;
 }
 
 // SOAL 3
 void clear(Stack& s) {
+    while(s.top != nullptr){
+        Node *nodeTeratas = s.top;
+        s.top = s.top->next;
+        delete nodeTeratas;
+    }
 }
 
 // SOAL 4
 bool kurungSeimbang(const string& ekspresi) {
-    return false;
+    Stack tumpukanKurung;
+    inisialisasi(tumpukanKurung);
+
+    for (size_t indeks = 0; indeks < ekspresi.size(); ++indeks) {
+        char karakter = ekspresi[indeks];
+
+        if (karakter == '(' || karakter == '[' || karakter == '{') {
+            push(tumpukanKurung, karakter);
+        }
+        else if (karakter == ')' || karakter == ']' || karakter == '}') {
+            int kurungBuka = 0;
+
+            if (!pop(tumpukanKurung, kurungBuka)) {
+                clear(tumpukanKurung);
+                return false;
+            }
+
+            bool cocok = (kurungBuka == '(' && karakter == ')') ||
+                        (kurungBuka == '[' && karakter == ']') ||
+                        (kurungBuka == '{' && karakter == '}');
+
+            if (!cocok) {
+                clear(tumpukanKurung);
+                return false;
+            }
+        }
+    }
+
+    bool hasil = isEmpty(tumpukanKurung);
+    clear(tumpukanKurung);
+    return hasil;
 }
 
 // =============================================================================
@@ -139,8 +186,7 @@ static void cobaUndo(Stack& s) {
     bool berhasil = pop(s, nilai);
     baris("Ctrl+Z");
     if (berhasil) cout << "berhasil, yang dibatalkan = " << nilai << "\n";
-    else          cout << "gagal (riwayat kosong), nilai tidak diubah ("
-                       << nilai << ")\n";
+    else          cout << "gagal (riwayat kosong), nilai tidak diubah ("<< nilai << ")\n";
 }
 
 static void langkah(const string& teks) {
